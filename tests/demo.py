@@ -18,7 +18,7 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.dirname(HERE))  # this file lives in tests/; the plugin is one up
 
 PAUSE = "--pause" in sys.argv
 
@@ -115,7 +115,6 @@ def section_3() -> None:
 def section_4() -> None:
     banner("4 / 4   REAL DISPATCH THROUGH HERMES", "not a mock-up: the real Hermes plugin loader")
     print()
-    sys.path.insert(0, "/Users/theoneglobal/.hermes/hermes-agent")
     try:
         from hermes_cli.middleware import run_tool_execution_middleware
         from hermes_cli.plugins import get_plugin_manager

@@ -186,15 +186,24 @@ def _count_hidden(text: str) -> int:
     return n
 
 
-def scan(text: str, *, threshold: int = 6) -> Verdict:
+def scan(text: str, *, threshold: int = 6,
+         exempt_families: frozenset[str] | set[str] = frozenset()) -> Verdict:
     """Score a blob of tool output. Threshold defaults to 6: one instruction-override or
-    destructive hit trips it, as do two medium signals together."""
+    destructive hit trips it, as do two medium signals together.
+
+    ``exempt_families`` skips whole signal families for this call. It exists for local file
+    reads, where attack-shaped text is legitimate content: a migration containing DROP TABLE
+    or a deploy script containing a recursive delete would otherwise be redacted, and if the
+    model rewrote that file the lines would be silently destroyed.
+    """
     if not text:
         return Verdict(0, [], 0, 0)
 
     findings: list[Finding] = []
     total = 0
     for family, weight, patterns in _FAMILIES:
+        if family in exempt_families:
+            continue
         samples: list[str] = []
         spans: list[tuple[int, int]] = []
         for pat in patterns:

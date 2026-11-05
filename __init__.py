@@ -74,14 +74,17 @@ def make_middleware(ctx):
             if not text:
                 return result
 
-            limit = int(cfg.get("max_scan_chars") or 2_000_000)
-            if len(text) > limit:
-                text = text[:limit]
+            limit = int(cfg.get("max_scan_chars") or 200_000)
+            text = text[:limit]
 
             detectors = _mod("detectors")
             sanitizer = _mod("sanitizer")
 
-            verdict = detectors.scan(text, threshold=int(cfg.get("threshold") or 6))
+            verdict = detectors.scan(
+                text,
+                threshold=int(cfg.get("threshold") or 6),
+                exempt_families=cfg_mod.exempt_families(tool_name, cfg),
+            )
             if not verdict.flagged:
                 if cfg.get("log_clean"):
                     logger.debug("injection-guard: %s clean", tool_name)
@@ -95,9 +98,16 @@ def make_middleware(ctx):
             action = "report" if cfg.get("mode") == "report" else "enforced"
 
             if cfg.get("mode") == "report":
-                new_text = text  # observe only: log it, change nothing
-            else:
-                new_text = sanitizer.envelope(clean_text, verdict, removed)
+                # Observe only: record it, then hand back the ORIGINAL result untouched.
+                # Returning the truncated scan window here would silently cut tool output.
+                cfg_mod.record(tool_name, verdict, action)
+                logger.warning(
+                    "injection-guard: %s result flagged (score=%s signals=%s action=report)",
+                    tool_name, verdict.score, verdict.families(),
+                )
+                return result
+
+            new_text = sanitizer.envelope(clean_text, verdict, removed)
 
             cfg_mod.record(tool_name, verdict, action)
             logger.warning(
