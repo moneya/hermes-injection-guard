@@ -64,19 +64,19 @@ def beat() -> None:
 
 
 def section_1() -> None:
-    banner("1 / 4   THE PROBLEM", "a web page your agent fetches, shown verbatim")
+    banner("1 / 4   THE PROBLEM", "a web page an AI assistant reads, shown in full")
     print()
     print(PAGE)
     print()
-    print("  ^ the model reads that hidden div as an instruction, because nothing")
-    print("    sits between the page and the context window.")
+    print("  ^ the AI reads that hidden line as an instruction, because nothing")
+    print("    stands between the page and the AI's own instructions.")
 
 
 def section_2() -> str:
     import detectors
     import sanitizer
 
-    banner("2 / 4   WITH injection-guard", "same page, same fetch, after the middleware")
+    banner("2 / 4   WITH injection-guard", "the same page, after the plugin has read it")
     verdict = detectors.scan(PAGE)
     redacted, spans = sanitizer.redact_spans(PAGE, verdict)
     clean, removed = sanitizer.neutralise(redacted)
@@ -113,7 +113,7 @@ def section_3() -> None:
 
 
 def section_4() -> None:
-    banner("4 / 4   REAL DISPATCH THROUGH HERMES", "the host's own middleware runner")
+    banner("4 / 4   REAL DISPATCH THROUGH HERMES", "not a mock-up: the real Hermes plugin loader")
     print()
     sys.path.insert(0, "/Users/theoneglobal/.hermes/hermes-agent")
     try:
