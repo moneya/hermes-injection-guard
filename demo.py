@@ -101,9 +101,9 @@ def section_3() -> None:
         v = detectors.scan(text)
         if v.flagged:
             bad += 1
-            print(f"  FLAG  {text[:60]}")
+            print(f"  FLAG  {text[:72]}")
         else:
-            print(f"  ok    {text[:58]:60} ({why})")
+            print(f"  ok    {text[:72]:74} ({why})")
     print()
     shown = len(CLEAN)
     passed = shown - bad
