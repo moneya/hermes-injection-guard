@@ -1,0 +1,19 @@
+name: injection-guard
+version: 0.1.0
+description: >-
+  Prompt-injection firewall for tool output. Wraps tool execution middleware to scan
+  web pages, browser results, emails and file contents for injected instructions before
+  they reach the model, then neutralises the dangerous spans and wraps the result in a
+  labelled untrusted-data envelope. Deterministic and offline: no network, no API calls,
+  no model in the decision path.
+manifest_version: 1
+kind: standalone
+author: McDonald Aladi
+license: MIT
+homepage: https://github.com/moneya/hermes-injection-guard
+
+provides_tools:
+  - injection_guard_stats
+
+provides_middleware:
+  - tool_execution
